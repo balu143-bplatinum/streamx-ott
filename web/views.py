@@ -57,7 +57,7 @@ def video_detail(request, pk):
     ad_cues = []
     for cue in midrolls:
         ad_cues.append({
-            'time': cue.timestamp_seconds,
+            'time': cue.time_in_seconds,
             'ad_url': cue.advertisement.ad_video.url,
             'link': cue.advertisement.destination_url or '#',
             'title': cue.advertisement.title,

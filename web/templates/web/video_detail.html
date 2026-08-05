@@ -1,6 +1,6 @@
 {% extends 'web/base.html' %}
 
-{% block title %}{{ video.title }} - StreamX PRO{% endblock %}
+{% block title %}{{ video.title }} - BMP OTT{% endblock %}
 
 {% block content %}
 <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
@@ -171,7 +171,7 @@
         var adBanner = document.getElementById('ad-banner');
         var adLink = document.getElementById('ad-link');
         if (adBanner) adBanner.classList.remove('hidden');
-        if (adLink) adLink.href = cue.link;
+        if (adLink) adLink.href = cue.link || "#";
 
         player.src({ type: 'video/mp4', src: cue.ad_url });
         player.load();
