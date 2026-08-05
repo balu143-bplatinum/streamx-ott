@@ -99,8 +99,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Legacy setting required by django-cloudinary-storage during collectstatic check
-# Uses CompressedStaticFilesStorage to prevent crashes from missing .map source files in third-party CSS
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # Cloudinary Media Configuration (Videos & Images)
 CLOUDINARY_STORAGE = {
@@ -115,7 +114,7 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.StaticFilesStorage",
     },
 }
 
