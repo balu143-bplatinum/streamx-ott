@@ -15,6 +15,9 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    # Modern Dark Admin UI (Must be before django.contrib.admin)
+    'jazzmin',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -94,7 +97,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Cloudinary Media Configuration (Videos & Images)
 CLOUDINARY_STORAGE = {
@@ -103,9 +105,27 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Storage backends configuration for Django 4.2+ & 5.0+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Jazzmin Admin UI Settings
+JAZZMIN_SETTINGS = {
+    "site_title": "StreamX Admin",
+    "site_header": "StreamX Studio",
+    "site_brand": "StreamX OTT",
+    "welcome_sign": "Welcome to StreamX Control Panel",
+    "copyright": "Hasini House of Entertainment",
+    "theme": "darkly",
+}
