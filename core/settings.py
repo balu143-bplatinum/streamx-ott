@@ -64,7 +64,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database configuration (Uses PostgreSQL on Neon/Render, falls back to SQLite locally)
+# Database configuration (Uses PostgreSQL on Render, falls back to SQLite locally)
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -99,7 +99,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Legacy setting required by django-cloudinary-storage during collectstatic check
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Uses CompressedStaticFilesStorage to prevent crashes from missing .map source files in third-party CSS
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Cloudinary Media Configuration (Videos & Images)
 CLOUDINARY_STORAGE = {
@@ -114,7 +115,7 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
