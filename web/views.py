@@ -52,7 +52,7 @@ def video_detail(request, pk):
     is_in_watchlist = pk in request.session.get('watchlist', [])
 
     # Fetch active scheduled mid-roll ad cues for this film
-    midrolls = video.midroll_ads.filter(advertisement__is_active=True)
+    midrolls = video.midroll_ads.filter(ad__is_active=True)
     
     ad_cues = []
     for cue in midrolls:
