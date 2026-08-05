@@ -1,0 +1,71 @@
+{% if videos %}
+<div class="relative group/carousel">
+    <!-- Left Navigation Arrow -->
+    <button onclick="document.getElementById('carousel-row').scrollBy({left: -600, behavior: 'smooth'})"
+            class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-30 w-10 h-20 bg-black/70 hover:bg-red-600/90 text-white items-center justify-center rounded-r-xl backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition duration-300 shadow-2xl">
+        ❮
+    </button>
+
+    <!-- Carousel Row Container -->
+    <div id="carousel-row" class="flex space-x-4 overflow-x-auto no-scrollbar py-4 px-2 scroll-smooth">
+        {% for video in videos %}
+        <div class="flex-none w-[220px] sm:w-[260px] md:w-[280px] group relative rounded-xl overflow-hidden bg-bmp-surface border border-white/5 hover:border-red-500/50 transition duration-300 hover:scale-105 hover:z-20 shadow-2xl">
+            
+            <!-- Poster Image -->
+            <a href="{% url 'video_detail' video.pk %}" class="block relative aspect-[16/9] overflow-hidden bg-black/60">
+                <img src="{{ video.get_thumbnail_url }}" 
+                     alt="{{ video.title }}" 
+                     class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-bmp-bg via-transparent to-transparent opacity-90"></div>
+
+                <!-- Badges -->
+                <div class="absolute top-2 left-2 flex items-center space-x-1">
+                    {% if forloop.counter <= 3 %}
+                    <span class="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow uppercase">
+                        TOP {{ forloop.counter }}
+                    </span>
+                    {% endif %}
+                    <span class="bg-black/80 backdrop-blur-md text-amber-400 border border-amber-500/30 font-bold text-[9px] px-1.5 py-0.5 rounded uppercase">
+                        4K UHD
+                    </span>
+                </div>
+
+                <!-- Duration Badge -->
+                <span class="absolute bottom-2 right-2 text-[10px] font-mono bg-black/80 text-gray-200 px-1.5 py-0.5 rounded">
+                    {{ video.duration }}
+                </span>
+            </a>
+
+            <!-- Card Info Footer -->
+            <div class="p-3.5 space-y-2">
+                <a href="{% url 'video_detail' video.pk %}" class="block">
+                    <h3 class="text-sm font-bold text-white group-hover:text-red-500 transition line-clamp-1">
+                        {{ video.title }}
+                    </h3>
+                </a>
+
+                <div class="flex items-center justify-between text-[11px] text-gray-400">
+                    <div class="flex items-center space-x-2">
+                        <span class="border border-gray-600 px-1 rounded text-[9px] font-bold text-gray-300">U/A 13+</span>
+                        <span>{{ video.category }}</span>
+                    </div>
+                    <span>👁 {{ video.views_count }}</span>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Right Navigation Arrow -->
+    <button onclick="document.getElementById('carousel-row').scrollBy({left: 600, behavior: 'smooth'})"
+            class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-20 bg-black/70 hover:bg-red-600/90 text-white items-center justify-center rounded-l-xl backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition duration-300 shadow-2xl">
+        ❯
+    </button>
+</div>
+{% else %}
+<div class="text-center py-12 bg-bmp-surface/50 rounded-2xl border border-white/5 max-w-md mx-auto">
+    <p class="text-sm text-gray-400">No titles match the selected search filters.</p>
+</div>
+{% endif %}

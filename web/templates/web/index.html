@@ -1,0 +1,155 @@
+{% extends 'web/base.html' %}
+
+{% block title %}StreamX PRO - Watch Movies & Series Online{% endblock %}
+
+{% block content %}
+<div class="space-y-10 pb-16">
+
+    <!-- 1. FULL-BLEED BILLBOARD HERO BANNER -->
+    {% with featured=videos.first %}
+    {% if featured %}
+    <div class="relative w-full h-[70vh] md:h-[80vh] min-h-[500px] overflow-hidden -mt-20">
+        <div class="absolute inset-0">
+            <img src="{{ featured.get_thumbnail_url }}" alt="{{ featured.title }}" class="w-full h-full object-cover object-top scale-105">
+            <div class="absolute inset-0 hero-vignette"></div>
+        </div>
+
+        <div class="relative max-w-[1700px] mx-auto h-full px-4 sm:px-8 flex flex-col justify-end pb-16 space-y-5">
+            <div class="flex items-center space-x-3 text-xs font-bold tracking-wider uppercase">
+                <span class="px-2 py-0.5 bg-red-600 text-white rounded">BMP ORIGINAL</span>
+                <span class="text-amber-400">★ 8.9 Rating</span>
+                <span class="text-gray-300">2026</span>
+                <span class="border border-gray-500 text-gray-300 px-1 rounded">U/A 16+</span>
+                <span class="border border-amber-500/50 text-amber-400 px-1 rounded">4K UHD</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight max-w-3xl drop-shadow-2xl uppercase">
+                {{ featured.title }}
+            </h1>
+
+            <p class="text-sm sm:text-base text-gray-300 max-w-2xl line-clamp-3 leading-relaxed drop-shadow">
+                {{ featured.description|default:"Stream the latest blockbuster film in Ultra HD. High-octane action, drama, and unmatched cinema quality." }}
+            </p>
+
+            <div class="flex items-center space-x-4 pt-2">
+                <a href="{% url 'video_detail' featured.pk %}" 
+                   class="px-8 py-3 bg-white hover:bg-gray-200 text-black font-extrabold rounded-xl transition flex items-center space-x-2 shadow-xl hover:scale-105">
+                    <span class="text-lg">▶</span>
+                    <span>Watch Now</span>
+                </a>
+
+                <a href="{% url 'video_detail' featured.pk %}" 
+                   class="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl backdrop-blur-md border border-white/20 transition flex items-center space-x-2">
+                    <span>ℹ More Info</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-8 space-y-10">
+
+        <!-- 2. CONTINUE WATCHING ROW -->
+        {% if continue_watching_videos %}
+        <div class="space-y-3">
+            <h2 class="text-xl font-bold text-white tracking-wide flex items-center space-x-2">
+                <span class="text-red-500">▎</span>
+                <span>Continue Watching for You</span>
+            </h2>
+
+            <div class="flex space-x-4 overflow-x-auto no-scrollbar py-2">
+                {% for video in continue_watching_videos %}
+                <a href="{% url 'video_detail' video.pk %}" class="flex-none w-[200px] sm:w-[240px] group relative rounded-xl overflow-hidden bg-bmp-surface border border-white/10 hover:border-red-500 transition shadow-lg">
+                    <div class="aspect-video relative overflow-hidden bg-black">
+                        <img src="{{ video.get_thumbnail_url }}" alt="{{ video.title }}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <span class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center text-sm shadow-lg">▶</span>
+                        </div>
+                    </div>
+                    <div class="p-2.5">
+                        <h4 class="text-xs font-bold text-white group-hover:text-red-500 line-clamp-1">{{ video.title }}</h4>
+                        <span class="text-[10px] text-gray-400 mt-0.5 block font-mono">{{ video.category }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 3. SEARCH & CATEGORY FILTER CONTROL BAR -->
+        <div class="bg-bmp-surface p-4 rounded-2xl border border-white/5 space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-red-500 text-lg">▎</span>
+                    <h2 class="text-lg font-bold text-white tracking-wide">Explore Catalog</h2>
+                </div>
+
+                <div class="relative w-full sm:w-80">
+                    <input type="text" 
+                           id="search-input"
+                           name="q"
+                           placeholder="Search titles, actors, genres..." 
+                           hx-get="/search/" 
+                           hx-include="#category-input"
+                           hx-trigger="keyup changed delay:250ms, search" 
+                           hx-target="#video-catalog" 
+                           hx-indicator="#search-spinner"
+                           class="w-full bg-black/60 border border-white/10 text-white text-sm rounded-xl px-4 py-2.5 pl-10 focus:outline-none focus:border-red-500 transition placeholder:text-gray-500">
+                    <span class="absolute left-3.5 top-2.5 text-gray-400 text-sm">🔍</span>
+                    <span id="search-spinner" class="htmx-indicator absolute right-3 top-3 text-xs text-red-500 font-mono animate-pulse">
+                        ...
+                    </span>
+                </div>
+            </div>
+
+            <input type="hidden" id="category-input" name="category" value="All">
+
+            <div class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+                <button onclick="setCategory('All', this)" 
+                        hx-get="/search/" 
+                        hx-include="#search-input, #category-input" 
+                        hx-target="#video-catalog"
+                        class="category-btn px-4 py-1.5 text-xs font-bold rounded-xl border border-red-600 bg-red-600 text-white transition whitespace-nowrap">
+                    All Titles
+                </button>
+
+                {% for cat in categories %}
+                <button onclick="setCategory('{{ cat }}', this)" 
+                        hx-get="/search/" 
+                        hx-include="#search-input, #category-input" 
+                        hx-target="#video-catalog"
+                        class="category-btn px-4 py-1.5 text-xs font-bold rounded-xl border border-white/10 bg-black/40 text-gray-300 hover:text-white hover:border-gray-500 transition whitespace-nowrap">
+                    {{ cat }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 4. MEDIA CAROUSEL SECTION -->
+        <div class="space-y-2">
+            <h2 class="text-xl font-bold text-white tracking-wide flex items-center space-x-2">
+                <span class="text-red-500">▎</span>
+                <span>Trending Now</span>
+            </h2>
+
+            <div id="video-catalog">
+                {% include 'web/partials/video_list.html' %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function setCategory(catName, btnElement) {
+        document.getElementById('category-input').value = catName;
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.className = "category-btn px-4 py-1.5 text-xs font-bold rounded-xl border border-white/10 bg-black/40 text-gray-300 hover:text-white hover:border-gray-500 transition whitespace-nowrap";
+        });
+
+        btnElement.className = "category-btn px-4 py-1.5 text-xs font-bold rounded-xl border border-red-600 bg-red-600 text-white transition whitespace-nowrap";
+    }
+</script>
+{% endblock %}
