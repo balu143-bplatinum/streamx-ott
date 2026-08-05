@@ -1,4 +1,3 @@
-# web/views.py
 import json
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
@@ -19,7 +18,7 @@ def index(request):
     watchlist_videos = []
     if watchlist_ids:
         videos_dict = Video.objects.in_bulk(watchlist_ids)
-        watchlist_videos = [videos_dict[vid] for vid in watchlist_ids if vid in watchlist_ids]
+        watchlist_videos = [videos_dict[vid] for vid in watchlist_ids if vid in videos_dict]
 
     videos = Video.objects.all().order_by('-created_at')
     categories = Video.objects.values_list('category', flat=True).distinct()
@@ -56,11 +55,24 @@ def video_detail(request, pk):
     
     ad_cues = []
     for cue in midrolls:
+        # Determine ad video URL based on helper method or direct attribute access
+        if hasattr(cue.ad, 'get_video_url'):
+            ad_url = cue.ad.get_video_url()
+        elif hasattr(cue.ad, 'ad_video') and cue.ad.ad_video:
+            ad_url = cue.ad.ad_video.url
+        elif hasattr(cue.ad, 'video_file') and cue.ad.video_file:
+            ad_url = cue.ad.video_file.url
+        else:
+            ad_url = '#'
+
+        # Determine target link using available attribute options
+        link = getattr(cue.ad, 'destination_url', None) or getattr(cue.ad, 'target_url', None) or getattr(cue.ad, 'link', '#')
+
         ad_cues.append({
             'time': cue.time_in_seconds,
-            'ad_url': cue.advertisement.ad_video.url,
-            'link': cue.advertisement.destination_url or '#',
-            'title': cue.advertisement.title,
+            'ad_url': ad_url,
+            'link': link,
+            'title': getattr(cue.ad, 'title', 'Advertisement'),
             'played': False
         })
 
